@@ -1,0 +1,52 @@
+{
+  "phases": [
+    {
+      "routes": [
+        {
+          "path": "/exchange/page-1",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"request\": \"page-1\", \"events\": [{\"status\": 103, \"headers\": {\"link\": \"</assets/logo>; rel=preload; as=image\"}}, {\"status\": 200, \"headers\": {\"content-type\": \"text/html\", \"etag\": \"page-a\"}, \"body\": \"<html><body><img src=\\\"/assets/photo-a\\\">开放车间</body></html>\"}]}"
+        },
+        {
+          "path": "/pages/live",
+          "headers": {
+            "content-type": "text/html"
+          },
+          "earlyHints": "</assets/logo>; rel=preload; as=image",
+          "body": "<html><body><img src=\"/assets/photo-a\">开放车间</body></html>"
+        },
+        {
+          "path": "/pages/final",
+          "headers": {
+            "content-type": "text/html"
+          },
+          "body": "<html><body><img src=\"/assets/photo-b\">工厂介绍</body></html>"
+        },
+        {
+          "path": "/assets/logo",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "base64": "bG9jYWwtbG9nby1ieXRlcw=="
+        },
+        {
+          "path": "/assets/photo-a",
+          "headers": {
+            "content-type": "image/png",
+            "etag": "asset-a"
+          },
+          "base64": "bG9jYWwtcGhvdG8tYQ=="
+        },
+        {
+          "path": "/assets/photo-b",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "base64": "bG9jYWwtcGhvdG8tYg=="
+        }
+      ]
+    }
+  ]
+}
