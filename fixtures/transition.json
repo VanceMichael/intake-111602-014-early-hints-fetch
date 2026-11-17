@@ -18,6 +18,36 @@
           "body": "<html><body><img src=\"/assets/photo-a\">开放车间</body></html>"
         },
         {
+          "path": "/exchange/slow",
+          "json": {
+            "request": "slow",
+            "events": [
+              { "status": 103, "headers": { "link": "</assets/photo-slow>; rel=preload; as=image" } },
+              { "status": 200, "headers": { "content-type": "text/html", "etag": "page-slow" }, "body": "<html><body><img src=\"/assets/photo-slow\">慢速配图</body></html>" }
+            ]
+          }
+        },
+        {
+          "path": "/exchange/external",
+          "json": {
+            "request": "external",
+            "events": [
+              { "status": 103, "headers": { "link": "</assets/logo>; rel=preload; as=image" } },
+              { "status": 302, "headers": { "location": "https://example.invalid/elsewhere" } }
+            ]
+          }
+        },
+        {
+          "path": "/exchange/broken",
+          "json": {
+            "request": "broken",
+            "events": [
+              { "status": 103, "headers": { "link": "</assets/missing>; rel=preload; as=image" } },
+              { "status": 200, "headers": { "content-type": "text/html" }, "body": "<html><body><img src=\"/assets/missing\">缺失配图</body></html>" }
+            ]
+          }
+        },
+        {
           "path": "/pages/final",
           "headers": {
             "content-type": "text/html"
@@ -45,6 +75,14 @@
             "content-type": "image/png"
           },
           "base64": "bG9jYWwtcGhvdG8tYg=="
+        },
+        {
+          "path": "/assets/photo-slow",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "delayMs": 300,
+          "base64": "bG9jYWwtcGhvdG8tc2xvdw=="
         }
       ]
     },
@@ -66,6 +104,36 @@
           "body": "<html><body><img src=\"/assets/photo-a\">开放车间</body></html>"
         },
         {
+          "path": "/exchange/slow",
+          "json": {
+            "request": "slow",
+            "events": [
+              { "status": 103, "headers": { "link": "</assets/photo-slow>; rel=preload; as=image" } },
+              { "status": 200, "headers": { "content-type": "text/html", "etag": "page-slow" }, "body": "<html><body><img src=\"/assets/photo-slow\">慢速配图</body></html>" }
+            ]
+          }
+        },
+        {
+          "path": "/exchange/external",
+          "json": {
+            "request": "external",
+            "events": [
+              { "status": 103, "headers": { "link": "</assets/logo>; rel=preload; as=image" } },
+              { "status": 302, "headers": { "location": "https://example.invalid/elsewhere" } }
+            ]
+          }
+        },
+        {
+          "path": "/exchange/broken",
+          "json": {
+            "request": "broken",
+            "events": [
+              { "status": 103, "headers": { "link": "</assets/missing>; rel=preload; as=image" } },
+              { "status": 200, "headers": { "content-type": "text/html" }, "body": "<html><body><img src=\"/assets/missing\">缺失配图</body></html>" }
+            ]
+          }
+        },
+        {
           "path": "/pages/final",
           "headers": {
             "content-type": "text/html"
@@ -93,6 +161,14 @@
             "content-type": "image/png"
           },
           "base64": "bG9jYWwtcGhvdG8tYg=="
+        },
+        {
+          "path": "/assets/photo-slow",
+          "headers": {
+            "content-type": "image/png"
+          },
+          "delayMs": 300,
+          "base64": "bG9jYWwtcGhvdG8tc2xvdw=="
         }
       ]
     }

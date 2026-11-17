@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { Catalog } from './catalog.mjs';
+import { Collector } from './collect.mjs';
 import { decode } from './decode.mjs';
 import { SourceClient } from './transport.mjs';
 import { profile } from './profile.mjs';
@@ -13,6 +14,7 @@ export async function previewOne(base, path = profile.previewPath) {
 
 export async function startApplication({ source, root, port = 0 }) {
   const catalog = await new Catalog(root).initialize();
+  const collector = new Collector({ client: new SourceClient(source), catalog });
   const server = createServer(async (request, response) => {
     response.setHeader('content-type', 'application/json; charset=utf-8');
     try {
@@ -33,6 +35,24 @@ export async function startApplication({ source, root, port = 0 }) {
         return response.end(JSON.stringify(receipt));
       }
       if (request.method === 'GET' && url.pathname === '/receipts') return response.end(JSON.stringify(await catalog.list()));
+      if (request.method === 'POST' && url.pathname === '/collections') {
+        const chunks = [];
+        for await (const chunk of request) chunks.push(chunk);
+        const input = JSON.parse(Buffer.concat(chunks));
+        const headers = {};
+        for (const [name, value] of Object.entries(input.headers || {})) {
+          if (typeof value === 'string') headers[name] = value;
+        }
+        const controller = new AbortController();
+        response.once('close', () => { if (!response.writableEnded) controller.abort(); });
+        const record = await collector.collect(input.path || profile.previewPath, { headers, signal: controller.signal });
+        response.statusCode = 201;
+        return response.end(JSON.stringify(record));
+      }
+      if (request.method === 'GET' && url.pathname === '/collections') return response.end(JSON.stringify(await catalog.collections()));
+      if (request.method === 'GET' && url.pathname.startsWith('/collections/')) {
+        return response.end(JSON.stringify(await catalog.collection(url.pathname.split('/').at(-1))));
+      }
       if (request.method === 'GET' && url.pathname.startsWith('/objects/')) {
         response.setHeader('content-type', 'application/octet-stream');
         return response.end(await catalog.object(url.pathname.split('/').at(-1)));
@@ -45,7 +65,7 @@ export async function startApplication({ source, root, port = 0 }) {
     }
   });
   await new Promise(resolve => server.listen(port, '127.0.0.1', resolve));
-  return { base: `http://127.0.0.1:${server.address().port}`, catalog,
+  return { base: `http://127.0.0.1:${server.address().port}`, catalog, collector,
     close: () => new Promise(resolve => { server.closeAllConnections(); server.close(resolve); }) };
 }
 

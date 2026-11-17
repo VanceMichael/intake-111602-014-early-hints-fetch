@@ -11,6 +11,7 @@ export class Catalog {
   async initialize() {
     await mkdir(join(this.root, 'objects'), { recursive: true });
     await mkdir(join(this.root, 'receipts'), { recursive: true });
+    await mkdir(join(this.root, 'collections'), { recursive: true });
     return this;
   }
 
@@ -53,6 +54,35 @@ export class Catalog {
     await this.initialize();
     const files = (await readdir(join(this.root, 'receipts'))).filter(name => name.endsWith('.json')).sort();
     return Promise.all(files.map(name => readFile(join(this.root, 'receipts', name), 'utf8').then(JSON.parse)));
+  }
+
+  async saveCollection(record) {
+    if (!record || !record.id) throw new TypeError('采集记录缺少标识');
+    const operation = this.serial.then(async () => {
+      await this.initialize();
+      await this.atomic(join(this.root, 'collections', `${record.id}.json`),
+        Buffer.from(JSON.stringify(record, null, 2)));
+      return record;
+    });
+    this.serial = operation.catch(() => {});
+    return operation;
+  }
+
+  async collections() {
+    await this.initialize();
+    const files = (await readdir(join(this.root, 'collections'))).filter(name => name.endsWith('.json')).sort();
+    return Promise.all(files.map(name => readFile(join(this.root, 'collections', name), 'utf8').then(JSON.parse)));
+  }
+
+  async collection(id) {
+    if (!/^[0-9a-f-]{36}$/.test(id)) throw new Error('无效的采集标识');
+    await this.initialize();
+    try {
+      return JSON.parse(await readFile(join(this.root, 'collections', `${id}.json`), 'utf8'));
+    } catch (error) {
+      if (error.code === 'ENOENT') throw new Error('没有此采集记录');
+      throw error;
+    }
   }
 
   async object(digest) {

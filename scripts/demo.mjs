@@ -14,6 +14,11 @@ try {
   const body = await fetch(`${app.base}/objects/${saved.digest}`).then(response => response.arrayBuffer());
   if (body.byteLength !== saved.bytes) throw new Error('原始资料长度不符');
   process.stdout.write(`原件已接收：${saved.digest}，${saved.bytes} 字节\n`);
+  const collection = await fetch(`${app.base}/collections`, { method: 'POST',
+    headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path: '/exchange/page-2' }) }).then(response => response.json());
+  const discarded = collection.tentative.filter(item => item.disposition === 'discarded').length;
+  process.stdout.write(`采集 ${collection.request.path}：${collection.outcome}，正式采用 ${collection.resources.length} 个资源，`
+    + `暂定未采用 ${discarded} 个，节省请求 ${collection.stats.savedRequests} 个\n`);
 } finally {
   await app.close();
   await source.close();

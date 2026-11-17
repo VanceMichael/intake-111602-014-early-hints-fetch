@@ -17,9 +17,11 @@ npm run demo
 
 需要交互时分别运行 `npm run source` 与 `npm start`。来源默认监听本机 4310 端口，应用默认监听 4320；可用 `PORT`、`SOURCE_URL`、`DATA_DIR` 配置。`GET /preview` 获取预览，`POST /receipts` 接收当前资料，`GET /receipts` 查询凭据，`GET /objects/<摘要>` 回读原件。应用只允许配置到本机的资料服务。
 
+`POST /collections` 按来源的 103 Early Hints 采集一个页面的配图，请求体可带 `path` 与 `headers`（请求条件）；`GET /collections`、`GET /collections/<标识>` 回读采集记录。提示触发的领取只是暂定工作：只有最终页面真正采用的资源才写入接收凭据，页面失败、跳转或未采用时暂定领取即作废。同一地址按请求条件区分复用，跳转不越出配置的来源边界；多个页面共享同一份暂定字节时按引用计数保留，取消其中一个页面不会删掉另一个仍在用的字节。采集记录如实列出页面原文、正式资源关系、尚未完成的原因与节省的请求数，不就速度下结论。
+
 ## 目录
 
-`source/` 负责资料源的发布日期和传输状态；`src/decode.mjs` 解释一份来源资料；`src/catalog.mjs` 管理不可变原件及接收凭据；`src/app.mjs` 提供查看服务。资料含义及来源控制见 `docs/资料接口.md`。
+`source/` 负责资料源的发布日期和传输状态；`src/decode.mjs` 解释一份来源资料；`src/catalog.mjs` 管理不可变原件、接收凭据与采集记录；`src/collect.mjs` 按 103 提示暂定领取并以终页采用为准；`src/app.mjs` 提供查看服务。资料含义及来源控制见 `docs/资料接口.md`。
 
 ## 容器
 

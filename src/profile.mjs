@@ -7,5 +7,20 @@ export const profile = {
     "finalStatus",
     "finalHeaders",
     "body"
+  ],
+  "collectionKeys": [
+    "id",
+    "startedAt",
+    "finishedAt",
+    "request",
+    "outcome",
+    "chain",
+    "finalUrl",
+    "page",
+    "resources",
+    "tentative",
+    "incomplete",
+    "stats",
+    "failure"
   ]
 };
